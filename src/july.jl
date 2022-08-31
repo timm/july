@@ -4,7 +4,7 @@ module July
 include("lib.jl")
 help=include("about.jl")
 
-println(x)
+println(ehekp)
 end
 
 

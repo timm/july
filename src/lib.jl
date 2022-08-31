@@ -10,8 +10,8 @@ function coerce(s::String)
 
 function settings(s)
   d = Dict()
-  fun=(ss -> d[ss[2][3:]] = coerce(d[end]))
-  [fun(split(line)) for line in split(s,"\n") 
-   if size(line)>8 and line[1:2]==" ="]
+  for line in split(s,"\n") 
+    if size(line)>8 && line[1:2]==" ="
+      (a -> d[a[2][3:end]] = coerce(a[end]))(split(line)) end end
   d end
 
