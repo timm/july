@@ -6,11 +6,12 @@ hi() {
   clear
   tput bold; tput setaf 5
   cat<<-'EOF'
-    _          _   _        
-   (_)  _  _  | | (_)  __ _ 
-   | | | || | | | | | / _` |
-  _/ |  \_,_| |_| |_| \__,_|
- |__/                       
+       _             __         
+      (_)  __  __   / /   __  __
+     / /  / / / /  / /   / / / /
+    / /  / /_/ /  / /   / /_/ / 
+ __/ /   \__,_/  /_/    \__, /  
+/___/                  /____/   
 
 	EOF
   tput bold; tput setaf 241
@@ -34,6 +35,6 @@ export EDITOR=$(which pico)
 here() { cd $1; basename `pwd`; }
 #!/usr/bin/env bash
 
-PROMPT_COMMAND='echo -ne "⓻ $(git branch 2>/dev/null | grep '^*' | colrm 1 2):";PS1="$(here ..)/$(here .):\!\e[m ▶ "'
+PROMPT_COMMAND='echo -ne "👩 $(git branch 2>/dev/null | grep '^*' | colrm 1 2):";PS1="$(here ..)/$(here .):\!\e[m ▶ "'
 
 hi
