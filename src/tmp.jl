@@ -30,7 +30,7 @@ function cli(d::Dict)
       if v == "-" * slot[1] 
         d[slot] = coerce(x==true  ? "false" : (
                          x==false ? "true"  : (
-                         ARGS[i+1]))) end end end 
+                         ARGS[i+1]))) end end end
   d end 
 
 d =Dict()
