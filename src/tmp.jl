@@ -53,15 +53,16 @@ function settings(s)
 
 # -----------------------------------------------------------------------------
 # Generic add. Ignore unknown values. Increment `n`, call `inc1!`.
+function incs(i,a) for x in a inc!(i,x); end; a end
 function inc!(i,x,n=1)
-  if x != the[:unknown] i.n += n; inc1!(i x,n) end end
+  if (x != the[:unknown]) (i.n += n; inc1!(i x,n)); end end
 
 # -----------------------------------------------------------------------------
 # Keep, at most `the[:max]` items.
 @with_kw mutable struct Some _has=[]; ready=false end
 
 # Add something to `_has`. But if its full, replace anything at random.
-function inc1!(i::Some,x)
+function inc1!(i::Some,x,n) # <== n is ignored, used only in Sym
   m = length(i._has)
   if     (m      < the[:max]) (i.ready=false; push!(i._has,x))
   elseif (rand() < m/i.n) (i.ready=false; i._has[int(m*rand())+1]=x) end end end  
@@ -72,13 +73,8 @@ div(i::Some)   = (per(i,.9) - per(i, .1)) / 2,58
 per(i::Some,n) = (ok(i); i._has[int(n*length(i._has))+1]) 
 fresh(i::Some) = i.ready ? i._has : (sort!(i._has); i.ready=true; i._has)
 
+incs(Some(),[1,2,3,4,5,6])
 # ------------------------------------------------------------------------------
-@with_kw mutable struct Num 
-  at=0; txt=""; w=1;  n=0; lo=10^30; hi=-1*10^30; _all=Some()  end
-
-mid(i::Num)   = i.mu
-stale(i::Num) = i.sd = nothing
-
 
 # the = cli(settings(help))
 # println(the)
