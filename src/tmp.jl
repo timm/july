@@ -17,8 +17,13 @@ help = """
         -u --unknown unknown = ?
        """
 
+include("lib/2thing.jl")
+include("lib/settings.jl")
+the = include("about.jl")
+println(the)
+
 for f in [
-  "lib/2thing.jl","lib/2string.jl","lib/settings.jl","lib/lists.jl",
+  "lib/2string.jl","lib/settings.jl","lib/lists.jl",
   "col/col.jl", "col/sample.jl"]
   include(f) end
 
