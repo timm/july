@@ -1,6 +1,7 @@
 # vim: ts=2 sw=2 et : 
-module Tmp
+module tmp
 export Num,Sym,Sample
+using Random, Parameters
 
 help = """
        TMP : thing that is fun
