@@ -16,18 +16,7 @@ help = """
 
 # ------------------------------------------------------------------------------
 # ## Lib
-# ### String to Things
-# Coerce string to thing.
-function coerce(s)
-  for t in [Int64,Float64,Bool] if (x=tryparse(t,s)) != nothing return x end end 
-  return strip(s) end
-
-# Coerce csv rows to cells.
-function csv(file, fun)
-  for line in eachline(file)
-    line = strip(line)
-    if sizeof(line) > 0 fun(map(coerce, split(line, ","))) end end end 
-
+inlcude("lb/2thing.jl")
 # ### Thing to String
 function say(i)
   s,pre="$(typeof(i)){",""
@@ -70,8 +59,8 @@ function inc1!(i::Some,x,n) # <== n is ignored, used only in Sym
 # `mid` = median. `div` = standard deviation. `per` returns the n-th item.
 mid(i::Some)   = per(i,.5)
 div(i::Some)   = (per(i,.9) - per(i, .1)) / 2,58
-per(i::Some,n) = (ok(i); i._has[int(n*length(i._has))+1]) 
-fresh(i::Some) = i.ready ? i._has : (sort!(i._has); i.ready=true; i._has)
+per(i::Some,n) = (nums(i); i._has[int(n*length(i._has))+1]) 
+nums(i::Some) = i.ready ? i._has : (sort!(i._has); i.ready=true; i._has)
 
 incs(Some(),[1,2,3,4,5,6])
 # ------------------------------------------------------------------------------
