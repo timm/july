@@ -23,24 +23,17 @@ docs : pdfs htmls ## all docs
 pdfs : ../docs/xai.pdf ../docs/lib.pdf ../docs/xaigo.pdf 
 htmls: ../docs/xai.html ../docs/lib.html ../docs/xaigo.html
 
-../docs/%.pdf : %.jl  ## make pdf
+%.md : %.jl  ## make pdf
+	echo "\`\`\`julia" > $@
+	cat $<  >> $@
+	echo "\`\`\`" >> $@
+
+../docs/%.pdf : %.md  ## make pdf
 	@mkdir -p $R/docs
 	@echo "pdf-ing $@ ... "
-	@a2ps -Bjr             \
-		-q                    \
-		-L 125                 \
-		--prologue color     \
-		--line-numbers=1        \
-		--highlight-level=normal \
-		--borders=no              \
-		--pro=color                \
-		--columns 3                 \
-		--right-footer=""            \
-		--pretty-print=jl          \
-		--left-footer=""              \
-		--footer="page %p."             \
-		--pretty-print                    \
-		-M letter                        \
-		-o $@.ps $<                      
-	@ps2pdf $@.ps $@; rm $@.ps; git add $@;  
+	pandoc --pdf-engine=pdflatex \
+				 -V mainfont=lmodern   \
+		     -V documentclass=extarticle \
+				 -V fontsize=8pt  \
+		     -V geometry=margin=.5in -o $@ $<
 	@open $@
