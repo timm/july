@@ -1,0 +1,1463 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 24 24 571 818
+%%Title: Enscript Output
+%%For: Timothy Menzies
+%%Creator: GNU Enscript 1.6.6
+%%CreationDate: Sat Sep  3 23:40:59 2022
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 6
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 6
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 5 5 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [595 842] 
+  >> setpagedevice
+} if
+/d_page_w 794 def
+/d_page_h 547 def
+/d_header_x 0 def
+/d_header_y 547 def
+/d_header_w 794 def
+/d_header_h 0 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 794 def
+/d_footer_h 0 def
+/d_output_w 794 def
+/d_output_h 547 def
+/cols 3 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 1 def
+/fname (sandbox.jl) def
+/fdir (.) def
+/ftail (sandbox.jl) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+18 539 M (1:) s
+27 539 M
+(module My) s
+18 533 M (2:) s
+27 533 M
+(using Parameters ) s
+18 527 M (3:) s
+27 527 M
+(using Random) s
+18 521 M (4:) s
+18 515 M (5:) s
+27 515 M
+(@with_kw mutable struct Config) s
+18 509 M (6:) s
+27 509 M
+(  char = \(skip='?',less='>',more='<',num='$',klass='!'\)) s
+18 503 M (7:) s
+27 503 M
+(  str  = \(skip="?",\)) s
+18 497 M (8:) s
+27 497 M
+(  some = \(max=512,step=.5, cohen=.3, trivial=1.05\)) s
+18 491 M (9:) s
+27 491 M
+(  seed = 1) s
+15 485 M (10:) s
+27 485 M
+(end) s
+15 479 M (11:) s
+15 473 M (12:) s
+27 473 M
+(THE = Config\(\)) s
+15 467 M (13:) s
+27 467 M
+(Random.seed!\(THE.seed\)) s
+15 461 M (14:) s
+15 455 M (15:) s
+27 455 M
+(# -------------------------------------------) s
+15 449 M (16:) s
+27 449 M
+(same\(s\) = s) s
+15 443 M (17:) s
+27 443 M
+(int\(x\)  = floor\(Int,x\)) s
+15 437 M (18:) s
+27 437 M
+(any\(a\)  = a[ int\(size\(a\) * rand\(\)\) + 1 ]) s
+15 431 M (19:) s
+15 425 M (20:) s
+27 425 M
+(function say\(i\)) s
+15 419 M (21:) s
+27 419 M
+(  s,pre="$\(typeof\(i\)\){","") s
+15 413 M (22:) s
+27 413 M
+(  for f in sort!\([x for x in fieldnames\(typeof\(i\)\) ) s
+15 407 M (23:) s
+27 407 M
+(                     if !\("$x"[1] == '_'\)]\)) s
+15 401 M (24:) s
+27 401 M
+(    g = getfield\(i,f\)) s
+15 395 M (25:) s
+27 395 M
+(    s = s * pre * "$f=$g" ) s
+15 389 M (26:) s
+27 389 M
+(    pre=", ") s
+15 383 M (27:) s
+27 383 M
+(  end) s
+15 377 M (28:) s
+27 377 M
+(  print\(s * "}"\)) s
+15 371 M (29:) s
+27 371 M
+(end) s
+15 365 M (30:) s
+15 359 M (31:) s
+27 359 M
+(# -------------------------------------------) s
+15 353 M (32:) s
+15 347 M (33:) s
+27 347 M
+(adds!\(init=[],i=Some\) = incs!\(i\(\),init, 1\)) s
+15 341 M (34:) s
+27 341 M
+(subs!\(init=[],i=Some\) = incs!\(i\(\),init,-1\)) s
+15 335 M (35:) s
+27 335 M
+(add!\(i,x\)             = inc!\( i  ,   x, 1\)) s
+15 329 M (36:) s
+27 329 M
+(sub!\(i,x\)             = inc!\( i  ,   x,-1\)) s
+15 323 M (37:) s
+15 317 M (38:) s
+27 317 M
+(# my cols can do:) s
+15 311 M (39:) s
+27 311 M
+(#    incs!, inc!, statel, fresh, mid, var) s
+15 305 M (40:) s
+27 305 M
+(# my cols know about:) s
+15 299 M (41:) s
+27 299 M
+(#    w,pos,txt,w,key,n) s
+15 293 M (42:) s
+27 293 M
+(incs!\(i,init=[],w=1\) = begin [inc!\(i,x,w\) for x in init]; i end) s
+15 287 M (43:) s
+15 281 M (44:) s
+27 281 M
+(function inc!\(i,x,w=1\)) s
+15 275 M (45:) s
+27 275 M
+(  y=i.key\(x\)) s
+15 269 M (46:) s
+27 269 M
+(  if y != THE.str.skip ) s
+15 263 M (47:) s
+27 263 M
+(    stale\(i\)) s
+15 257 M (48:) s
+27 257 M
+(    i.n += w) s
+15 251 M (49:) s
+27 251 M
+(    inc1!\(i, y,w\) end) s
+15 245 M (50:) s
+27 245 M
+(end) s
+15 239 M (51:) s
+15 233 M (52:) s
+27 233 M
+(# -------------------------------------------) s
+15 227 M (53:) s
+27 227 M
+(@with_kw mutable struct Num ) s
+15 221 M (54:) s
+27 221 M
+(  pos=0; txt=""; w=1; key=same; n=0;) s
+15 215 M (55:) s
+27 215 M
+(  lo=10^32; hi=-1*10^32; mu=0; m2=0; sd=nothing end) s
+15 209 M (56:) s
+15 203 M (57:) s
+27 203 M
+(mid\(i::Num\)   = i.mu) s
+15 197 M (58:) s
+27 197 M
+(stale\(i::Num\) = i.sd = nothing) s
+15 191 M (59:) s
+15 185 M (60:) s
+27 185 M
+(function var\(i::Num\)) s
+15 179 M (61:) s
+27 179 M
+(  if i.sd == nothing ) s
+15 173 M (62:) s
+27 173 M
+(    i.sd = i.n < 2 ? 0 : \(i.m2 / \(i.n - 1 + 10^-32\)\)^0.5 end ) s
+15 167 M (63:) s
+27 167 M
+(  i.sd) s
+15 161 M (64:) s
+27 161 M
+(end) s
+15 155 M (65:) s
+15 149 M (66:) s
+27 149 M
+(function inc1!\(i::Num,x\)) s
+15 143 M (67:) s
+27 143 M
+(  i.lo  = min\(i.lo, x\)) s
+15 137 M (68:) s
+27 137 M
+(  i.hi  = max\(i.hi, x\)) s
+15 131 M (69:) s
+27 131 M
+(  d     = x - i.mu) s
+15 125 M (70:) s
+27 125 M
+(  i.mu += d / i.n) s
+15 119 M (71:) s
+27 119 M
+(  i.m2 += d * \(x - i.mu\)) s
+15 113 M (72:) s
+27 113 M
+(end) s
+15 107 M (73:) s
+15 101 M (74:) s
+27 101 M
+(# -------------------------------------------) s
+15 95 M (75:) s
+15 89 M (76:) s
+27 89 M
+(@with_kw mutable struct Some ) s
+15 83 M (77:) s
+27 83 M
+(  pos=0; txt=""; w=1; key=same; n=0;) s
+15 77 M (78:) s
+27 77 M
+(  all=[]; max=THE.some.max ;tidy=false end) s
+15 71 M (79:) s
+15 65 M (80:) s
+27 65 M
+(p\(i::Some,n\)   = begin fresh\(i\); i.all[int\(n*length\(i.all\)\)+1] end) s
+15 59 M (81:) s
+27 59 M
+(stale\(i::Some\) = i.tidy=false) s
+15 53 M (82:) s
+15 47 M (83:) s
+27 47 M
+(function fresh\(i::Some\)) s
+15 41 M (84:) s
+27 41 M
+(  if !i.tidy ) s
+15 35 M (85:) s
+27 35 M
+(    sort!\(i.all\) ) s
+15 29 M (86:) s
+27 29 M
+(    i.tidy=true end  end) s
+15 23 M (87:) s
+15 17 M (88:) s
+27 17 M
+(has\(i::Some,n\) = begin fresh\(i\); i.all[n] end) s
+15 11 M (89:) s
+27 11 M
+(mid\(i::Some, lo=1, hi=length\(i.all\)\) = has\(i,int\(lo+\(hi-lo\)*.5\)\) ) s
+15 5 M (90:) s
+279.667 539 M (91:) s
+291.667 539 M
+(function var\(i::Some,lo=1,hi=length\(i.all\)\)      ) s
+279.667 533 M (92:) s
+291.667 533 M
+(  fresh\(i\)) s
+279.667 527 M (93:) s
+291.667 527 M
+(  n10 = int\(lo+\(hi-lo\)*.1\) + 1) s
+279.667 521 M (94:) s
+291.667 521 M
+(  n90 = int\(lo+\(hi-lo\)*.9\) + 1) s
+279.667 515 M (95:) s
+291.667 515 M
+(  \(i.all[n90] - i.all[n10]\)/2.7) s
+279.667 509 M (96:) s
+291.667 509 M
+(end) s
+279.667 503 M (97:) s
+279.667 497 M (98:) s
+291.667 497 M
+(function inc1!\(i::Some, x,w=1\)) s
+279.667 491 M (99:) s
+291.667 491 M
+(  m = length\(i.all\)) s
+276.667 485 M (100:) s
+291.667 485 M
+(  if m < i.max) s
+276.667 479 M (101:) s
+291.667 479 M
+(    push!\(i.all,x\)) s
+276.667 473 M (102:) s
+291.667 473 M
+(  elseif rand\(\) < m/i.n) s
+276.667 467 M (103:) s
+291.667 467 M
+(    i.all[ int\(m*rand\(\)\) + 1 ] = x end ) s
+276.667 461 M (104:) s
+291.667 461 M
+(end) s
+276.667 455 M (105:) s
+276.667 449 M (106:) s
+291.667 449 M
+("If i.all is broken at the points listed in `a`) s
+276.667 443 M (107:) s
+291.667 443 M
+(between `lo` and `hi`, what is the expected value?") s
+276.667 437 M (108:) s
+291.667 437 M
+(function xpect\(i::Some,a,lo=1,hi=length\(i.all\)\)) s
+276.667 431 M (109:) s
+291.667 431 M
+(  e1\(x,y\) = \(y-x+1\)/\(hi-lo+1\)*var\(i,x,y\)) s
+276.667 425 M (110:) s
+291.667 425 M
+(  e,m = 0,lo) s
+276.667 419 M (111:) s
+291.667 419 M
+(  for n in a) s
+276.667 413 M (112:) s
+291.667 413 M
+(    e += e1\(m,n\)) s
+276.667 407 M (113:) s
+291.667 407 M
+(    m = n+1) s
+276.667 401 M (114:) s
+291.667 401 M
+(  end) s
+276.667 395 M (115:) s
+291.667 395 M
+(  e + e1\(m,hi\) ) s
+276.667 389 M (116:) s
+291.667 389 M
+(end) s
+276.667 383 M (117:) s
+276.667 377 M (118:) s
+291.667 377 M
+(div\(i::Some\) = begin fresh\(i\); div\(i.all,i.key\) end) s
+276.667 371 M (119:) s
+276.667 365 M (120:) s
+291.667 365 M
+(# -------------------------------------------) s
+276.667 359 M (121:) s
+291.667 359 M
+(@with_kw mutable struct Range ) s
+276.667 353 M (122:) s
+291.667 353 M
+(  lo=0; hi=0; _all=[]; start=0; stop=0; w=0; _kids=[] end) s
+276.667 347 M (123:) s
+276.667 341 M (124:) s
+291.667 341 M
+(Base.show\(io::IO, i::Range\) = say\(i\)) s
+276.667 335 M (125:) s
+276.667 329 M (126:) s
+291.667 329 M
+("assumes lst is sorted") s
+276.667 323 M (127:) s
+291.667 323 M
+(function div\(lst::Array,key=same\)) s
+276.667 317 M (128:) s
+291.667 317 M
+(  the = THE.some) s
+276.667 311 M (129:) s
+291.667 311 M
+(  x\(z\)           = key\(lst[int\(z\)]\)) s
+276.667 305 M (130:) s
+291.667 305 M
+(  val\(y,z,p=0.5\) = x\(y+\(z-y\)*p\)) s
+276.667 299 M (131:) s
+291.667 299 M
+(  var\(y,z\)       = \(val\(y,z,0.9\) - val\(y,z,0.1\)\)/2.7) s
+276.667 293 M (132:) s
+291.667 293 M
+(  function xchop\(lo,hi,out=nothing\)) s
+276.667 287 M (133:) s
+291.667 287 M
+(    best = var\(lo,hi\)) s
+276.667 281 M (134:) s
+291.667 281 M
+(    for j = lo+step:hi-step) s
+276.667 275 M (135:) s
+291.667 275 M
+(      now, after = x\(j\), x\(j+1\)) s
+276.667 269 M (136:) s
+291.667 269 M
+(      if now != after ) s
+276.667 263 M (137:) s
+291.667 263 M
+(        if after - start > epsilon ) s
+276.667 257 M (138:) s
+291.667 257 M
+(          if stop - now > epsilon) s
+276.667 251 M (139:) s
+291.667 251 M
+(            if abs\(val\(lo,j\) - val\(j+1,hi\)\) > epsilon) s
+276.667 245 M (140:) s
+291.667 245 M
+(              n1,n2 = j-lo+1, hi-j) s
+276.667 239 M (141:) s
+291.667 239 M
+(              here  = \(var\(lo,j\)*n1 + var\(j+1,hi\)*n2\)/\(n1+n2\)) s
+276.667 233 M (142:) s
+291.667 233 M
+(              if here*the.trivial < best) s
+276.667 227 M (143:) s
+291.667 227 M
+(                best,out = here,j end end end end end end) s
+276.667 221 M (144:) s
+291.667 221 M
+(    return out) s
+276.667 215 M (145:) s
+291.667 215 M
+(  end) s
+276.667 209 M (146:) s
+291.667 209 M
+(  function xchops\(lo,hi,ranges, cut = chop\(lo,hi\)\)) s
+276.667 203 M (147:) s
+291.667 203 M
+(    if cut == nothing  ) s
+276.667 197 M (148:) s
+291.667 197 M
+(      push!\(ranges, Range\(lo=x\(lo\), hi=x\(hi\), ) s
+276.667 191 M (149:) s
+291.667 191 M
+(                          _all=lst[lo:hi],start=lo,stop=hi\)\)) s
+276.667 185 M (150:) s
+291.667 185 M
+(    else ) s
+276.667 179 M (151:) s
+291.667 179 M
+(      xchops\(lo,    cut, ranges\)) s
+276.667 173 M (152:) s
+291.667 173 M
+(      xchops\(cut+1, hi,  ranges\) end ) s
+276.667 167 M (153:) s
+291.667 167 M
+(  end) s
+276.667 161 M (154:) s
+291.667 161 M
+(  #----------------------------------------------) s
+276.667 155 M (155:) s
+291.667 155 M
+(  n                 = length\(lst\)) s
+276.667 149 M (156:) s
+291.667 149 M
+(  epsilon           = var\(1,n\) * the.cohen) s
+276.667 143 M (157:) s
+291.667 143 M
+(  step, start, stop = int\(n^the.step\)-1, x\(1\), x\(n\)) s
+276.667 137 M (158:) s
+291.667 137 M
+(  xchops\(1,n,[]\)) s
+276.667 131 M (159:) s
+291.667 131 M
+(end) s
+276.667 125 M (160:) s
+276.667 119 M (161:) s
+291.667 119 M
+(function chops\(lo,hi,ranges,chop\)) s
+276.667 113 M (162:) s
+291.667 113 M
+(    cut = chop\(lo,hi\)) s
+276.667 107 M (163:) s
+291.667 107 M
+(    if cut == nothing  ) s
+276.667 101 M (164:) s
+291.667 101 M
+(      push!\(ranges, Range\(lo=x\(lo\), hi=x\(hi\), ) s
+276.667 95 M (165:) s
+291.667 95 M
+(                          _all=lst[lo:hi],start=lo,stop=hi\)\)) s
+276.667 89 M (166:) s
+291.667 89 M
+(    else ) s
+276.667 83 M (167:) s
+291.667 83 M
+(      ychops\(lo,    cut, ranges\)) s
+276.667 77 M (168:) s
+291.667 77 M
+(      ychops\(cut+1, hi,  ranges\) end ) s
+276.667 71 M (169:) s
+291.667 71 M
+(  end) s
+276.667 65 M (170:) s
+291.667 65 M
+(end) s
+276.667 59 M (171:) s
+291.667 59 M
+(#) s
+276.667 53 M (172:) s
+291.667 53 M
+(#function unite\(rs, y=same,better= <, yis=Num\)) s
+276.667 47 M (173:) s
+291.667 47 M
+(#  the = THE.some) s
+276.667 41 M (174:) s
+291.667 41 M
+(#  all\(x=yis\(key=y\),a=[]\)= begin [incs!\(x,r._all\) for r in a]; x end) s
+276.667 35 M (175:) s
+291.667 35 M
+(#  function ychop\(lo,hi,best,rs,out=nothing\)) s
+276.667 29 M (176:) s
+291.667 29 M
+(#    left = yis\(key=y\)) s
+276.667 23 M (177:) s
+291.667 23 M
+(#    for j in lo:hi-1) s
+276.667 17 M (178:) s
+291.667 17 M
+(#      l= all\(x=left,[rs[j]]\)) s
+276.667 11 M (179:) s
+291.667 11 M
+(#      rall\(a=rs[j+1:hi]\)) s
+276.667 5 M (180:) s
+291.667 5 M
+(#      now = \(var\(l\)*l.n + var\(r\)*r.n\)/\(l.n + r.n\)) s
+541.333 539 M (181:) s
+556.333 539 M
+(#      if better\(now*the.trivial, best\)) s
+541.333 533 M (182:) s
+556.333 533 M
+(#        best,out = now,j end end) s
+541.333 527 M (183:) s
+556.333 527 M
+(#    out) s
+541.333 521 M (184:) s
+556.333 521 M
+(#  end) s
+541.333 515 M (185:) s
+556.333 515 M
+(#  f = \(start,stop\) -> ychop\(start,stopr,\)) s
+541.333 509 M (186:) s
+556.333 509 M
+(#  chop\(1,length\(rs\),[], var\(all\(ranges\)\)\)) s
+541.333 503 M (187:) s
+556.333 503 M
+(#end) s
+541.333 497 M (188:) s
+556.333 497 M
+(#) s
+541.333 491 M (189:) s
+556.333 491 M
+(# -------------------------------------------) s
+541.333 485 M (190:) s
+556.333 485 M
+(@with_kw mutable struct Sym ) s
+541.333 479 M (191:) s
+556.333 479 M
+(  pos=0; txt=""; w=1; key=same; n=0;) s
+541.333 473 M (192:) s
+556.333 473 M
+(  seen=Dict\(\);  mode=nothing; ent=nothing;  end) s
+541.333 467 M (193:) s
+541.333 461 M (194:) s
+556.333 461 M
+(mid\(i::Sym\) = begin i.fresh\(\); i.mode end) s
+541.333 455 M (195:) s
+556.333 455 M
+(var\(i::Sym\) = begin i.fresh\(\); i.ent  end) s
+541.333 449 M (196:) s
+541.333 443 M (197:) s
+556.333 443 M
+(stale\(i::Sym\) = i.mode,i.ent = nothing,nothing ) s
+541.333 437 M (198:) s
+556.333 437 M
+(function fresh\(i::Sym\) ) s
+541.333 431 M (199:) s
+556.333 431 M
+(  if i.mode == nothing) s
+541.333 425 M (200:) s
+556.333 425 M
+(    i.ent, most = 0,0) s
+541.333 419 M (201:) s
+556.333 419 M
+(    for \(k,n\) in i.seen ) s
+541.333 413 M (202:) s
+556.333 413 M
+(      p = n/i.n) s
+541.333 407 M (203:) s
+556.333 407 M
+(      i.ent -= p*log\(2,p\)  ) s
+541.333 401 M (204:) s
+556.333 401 M
+(      if n > most most,i.mode = n.k end end end) s
+541.333 395 M (205:) s
+556.333 395 M
+( end  ) s
+541.333 389 M (206:) s
+541.333 383 M (207:) s
+556.333 383 M
+(function inc1!\(i::Sym,x,w=1\)) s
+541.333 377 M (208:) s
+556.333 377 M
+(  new = w + \(haskey\(i.seen, x\) ? i.seen[x] : 0\)) s
+541.333 371 M (209:) s
+556.333 371 M
+(  i.seen[x] = max\(new,0\)) s
+541.333 365 M (210:) s
+556.333 365 M
+(end) s
+541.333 359 M (211:) s
+541.333 353 M (212:) s
+556.333 353 M
+(# --------------------------------------------) s
+541.333 347 M (213:) s
+556.333 347 M
+(norm\(i::Sym, x\) = x) s
+541.333 341 M (214:) s
+556.333 341 M
+(norm\(i::Some,x\) = begin fresh\(i\); \(x-i.all[1]\)/\(i.all[end]-i.all[1]\) end) s
+541.333 335 M (215:) s
+541.333 329 M (216:) s
+556.333 329 M
+(difference\(i::Sym, x,y\) = x==THE.string.skip ? 1 : x == y) s
+541.333 323 M (217:) s
+556.333 323 M
+(function difference\(i::Some,x,y, no = THE.string.skip\)) s
+541.333 317 M (218:) s
+556.333 317 M
+(  d\(a,b\) = begin a= norm\(i,a\); b= a<0.5 ? 1 : 0; abs\(a-b\) end) s
+541.333 311 M (219:) s
+556.333 311 M
+(  if     x==no && y==no 1 ) s
+541.333 305 M (220:) s
+556.333 305 M
+(  elseif x==no          d\(y,x\) ) s
+541.333 299 M (221:) s
+556.333 299 M
+(  elseif y==no          d\(x,y\) ) s
+541.333 293 M (222:) s
+556.333 293 M
+(  else                  abs\(norm\(i,x\) - norm\(i,y\)\) end) s
+541.333 287 M (223:) s
+556.333 287 M
+(end) s
+541.333 281 M (224:) s
+541.333 275 M (225:) s
+541.333 269 M (226:) s
+556.333 269 M
+(# -------------------------------------------) s
+541.333 263 M (227:) s
+556.333 263 M
+(@with_kw struct Lines file; src=open\(file\) end) s
+541.333 257 M (228:) s
+541.333 251 M (229:) s
+556.333 251 M
+("Define an iterator that returns a comma-seperated file, one) s
+541.333 245 M (230:) s
+556.333 245 M
+( record at a time without loading the whole file into memory.") s
+541.333 239 M (231:) s
+556.333 239 M
+(function Base.iterate\(it::Lines, \(n,want\)=\(1,[]\)\)) s
+541.333 233 M (232:) s
+556.333 233 M
+(  "Split on comma, coerce strings to numbers or strings, as approriate." ) s
+541.333 227 M (233:) s
+556.333 227 M
+(  coerce\(s\)  = map\(coerce1, split\(s,","\)\)) s
+541.333 221 M (234:) s
+556.333 221 M
+(  coerce1\(s\) = \(\(x = tryparse\(Float64,s\)\)==nothing\) ? s : x) s
+541.333 215 M (235:) s
+541.333 209 M (236:) s
+556.333 209 M
+(  "Coerce strings. If first row, check what columns we should use.) s
+541.333 203 M (237:) s
+556.333 203 M
+(   Only return those columns.") s
+541.333 197 M (238:) s
+556.333 197 M
+(  function cols\(a\)) s
+541.333 191 M (239:) s
+556.333 191 M
+(    if n == 1 ) s
+541.333 185 M (240:) s
+556.333 185 M
+(      want = [i for \(i,s\) in enumerate\(a\) if !\('?' in s\)] end) s
+541.333 179 M (241:) s
+556.333 179 M
+(    [a[i] for i in want]  ) s
+541.333 173 M (242:) s
+556.333 173 M
+(  end) s
+541.333 167 M (243:) s
+556.333 167 M
+(  ) s
+541.333 161 M (244:) s
+556.333 161 M
+(  "Delete comments and whitespace. Lines ending in) s
+541.333 155 M (245:) s
+556.333 155 M
+(   ',' are joined to the next. Skip empty lines.") s
+541.333 149 M (246:) s
+556.333 149 M
+(  function row\(txt=""\)) s
+541.333 143 M (247:) s
+556.333 143 M
+(    while true) s
+541.333 137 M (248:) s
+556.333 137 M
+(      if eof\(it.src\) return txt end) s
+541.333 131 M (249:) s
+556.333 131 M
+(      new = readline\(it.src\)) s
+541.333 125 M (250:) s
+556.333 125 M
+(      new = replace\(new, r"\([ \\t\\n]|#.*\)"=>""\)) s
+541.333 119 M (251:) s
+556.333 119 M
+(      if sizeof\(new\) != 0 ) s
+541.333 113 M (252:) s
+556.333 113 M
+(        txt *= new) s
+541.333 107 M (253:) s
+556.333 107 M
+(        if txt[end] != ',' ) s
+541.333 101 M (254:) s
+556.333 101 M
+(          return txt end end end end ) s
+541.333 95 M (255:) s
+541.333 89 M (256:) s
+556.333 89 M
+(  new = row\(\)) s
+541.333 83 M (257:) s
+556.333 83 M
+(  if sizeof\(new\) > 0 ) s
+541.333 77 M (258:) s
+556.333 77 M
+(    \(n, cols\(coerce\(new\)\)\) , \(n+1,want\) end ) s
+541.333 71 M (259:) s
+556.333 71 M
+( end) s
+541.333 65 M (260:) s
+541.333 59 M (261:) s
+556.333 59 M
+(#--------------------------------------------) s
+541.333 53 M (262:) s
+556.333 53 M
+(id=0) s
+541.333 47 M (263:) s
+541.333 41 M (264:) s
+556.333 41 M
+(@with_kw mutable struct Tbl) s
+541.333 35 M (265:) s
+556.333 35 M
+(  rows=[]; cols=Cols\(\) end) s
+541.333 29 M (266:) s
+541.333 23 M (267:) s
+556.333 23 M
+(@with_kw mutable struct Row) s
+541.333 17 M (268:) s
+556.333 17 M
+(  cells=[]; cooked=[]; id=global id+= 1) s
+541.333 11 M (269:) s
+556.333 11 M
+(end) s
+541.333 5 M (270:) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 2 def
+/fname (sandbox.jl) def
+/fdir (.) def
+/ftail (sandbox.jl) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+12 539 M (271:) s
+27 539 M
+(say\(Row\(\)\)) s
+12 533 M (272:) s
+27 533 M
+(say\(Row\(\)\)) s
+12 527 M (273:) s
+27 527 M
+(@with_kw mutable struct Cols) s
+12 521 M (274:) s
+27 521 M
+(  x = \(all=[], nums=[], syms=[]\)) s
+12 515 M (275:) s
+27 515 M
+(  y = \(all=[], nums=[], syms=[], goals=[]\)) s
+12 509 M (276:) s
+27 509 M
+(  klass="") s
+12 503 M (277:) s
+27 503 M
+(  all  = []; nums = []; syms = []; end) s
+12 497 M (278:) s
+12 491 M (279:) s
+27 491 M
+(function table\(file::String\) ) s
+12 485 M (280:) s
+27 485 M
+(  t=Tbl\(\)) s
+12 479 M (281:) s
+27 479 M
+(  for \(n,a\) in Lines\(file=file\)) s
+12 473 M (282:) s
+27 473 M
+(    n==1 ? head!\(t,a\) : row!\(t,a\) end) s
+12 467 M (283:) s
+27 467 M
+(  t) s
+12 461 M (284:) s
+27 461 M
+(end) s
+12 455 M (285:) s
+12 449 M (286:) s
+27 449 M
+(function row!\(i::Tbl,a\) ) s
+12 443 M (287:) s
+27 443 M
+(  [add!\(c,a[c.pos]\) for c in i.cols.all]) s
+12 437 M (288:) s
+27 437 M
+(  push!\(i.rows, Row\(cells=a\) \)) s
+12 431 M (289:) s
+27 431 M
+(end) s
+12 425 M (290:) s
+12 419 M (291:) s
+27 419 M
+(head!\(i::Tbl,a\) = [head!\(i.cols,n,x\) for \(n,x\) in enumerate\(a\)]) s
+12 413 M (292:) s
+12 407 M (293:) s
+27 407 M
+(function head!\(i::Cols, n,txt\)) s
+12 401 M (294:) s
+27 401 M
+(  the = THE.char) s
+12 395 M (295:) s
+27 395 M
+(  goalp\(\)  = the.less in txt || the.more in txt ) s
+12 389 M (296:) s
+27 389 M
+(  nump\(\)   = the.num  in txt || goalp\(\) ) s
+12 383 M (297:) s
+27 383 M
+(  yp\(\)     = klassp\(\) || goalp\(\) ) s
+12 377 M (298:) s
+27 377 M
+(  klassp\(\) = the.klass in txt ) s
+12 371 M (299:) s
+27 371 M
+(  x = nump\(\) ? Some : Sym ) s
+12 365 M (300:) s
+27 365 M
+(  y = x\(pos=n, txt=txt\)) s
+12 359 M (301:) s
+27 359 M
+(  if klassp\(\) i.klass = y end) s
+12 353 M (302:) s
+27 353 M
+(  if goalp\(\)  push!\(i.y.goals, y\) end) s
+12 347 M (303:) s
+27 347 M
+(  if nump\(\)) s
+12 341 M (304:) s
+27 341 M
+(    push!\(i.nums,y\); push!\(yp\(\) ? i.y.nums : i.x.nums, y\)) s
+12 335 M (305:) s
+27 335 M
+(  else) s
+12 329 M (306:) s
+27 329 M
+(    push!\(i.syms,y\); push!\(yp\(\) ? i.y.syms : i.x.syms, y\)) s
+12 323 M (307:) s
+27 323 M
+(  end) s
+12 317 M (308:) s
+27 317 M
+(  push!\(yp\(\)  ? i.y.all : i.x.all, y\)) s
+12 311 M (309:) s
+27 311 M
+(  push!\(i.all, y\)) s
+12 305 M (310:) s
+27 305 M
+(end) s
+12 299 M (311:) s
+12 293 M (312:) s
+27 293 M
+(#--------------------------------------------) s
+12 287 M (313:) s
+12 281 M (314:) s
+27 281 M
+(function tbl1\(f="data/auto.csv"\)) s
+12 275 M (315:) s
+27 275 M
+(  t = table\(f\)) s
+12 269 M (316:) s
+27 269 M
+(  println\("n ",length\(t.rows\)\)) s
+12 263 M (317:) s
+27 263 M
+(  for col in t.cols.x.nums) s
+12 257 M (318:) s
+27 257 M
+(   println\(div\(col\)\) #println\(var\(col\)," ",col.all\)) s
+12 251 M (319:) s
+27 251 M
+(  end) s
+12 245 M (320:) s
+27 245 M
+(end) s
+12 239 M (321:) s
+12 233 M (322:) s
+27 233 M
+(function nums\(f="data/auto.csv"\)) s
+12 227 M (323:) s
+27 227 M
+(  t = table\(f\)) s
+12 221 M (324:) s
+27 221 M
+(  #println\(t.rows[end].cells\)) s
+12 215 M (325:) s
+27 215 M
+(  for num in t.cols.x.nums) s
+12 209 M (326:) s
+27 209 M
+(    d=div\(num\)) s
+12 203 M (327:) s
+27 203 M
+(    println\(num.txt, " ",length\(d\)\)) s
+12 197 M (328:) s
+27 197 M
+(    println\(d\)) s
+12 191 M (329:) s
+27 191 M
+(  end) s
+12 185 M (330:) s
+27 185 M
+(end) s
+12 179 M (331:) s
+12 173 M (332:) s
+27 173 M
+(function sym1\(\)) s
+12 167 M (333:) s
+27 167 M
+(  s=Sym\(\)) s
+12 161 M (334:) s
+27 161 M
+(  [add!\(s,x\) for x in "aaaabbc"]) s
+12 155 M (335:) s
+27 155 M
+(end) s
+12 149 M (336:) s
+12 143 M (337:) s
+27 143 M
+(function Lines1\(f="data/weather.csv"\)) s
+12 137 M (338:) s
+27 137 M
+(  m=1) s
+12 131 M (339:) s
+27 131 M
+(  print\(m\)) s
+12 125 M (340:) s
+27 125 M
+(  for \(n,tmp\) in Lines\(file= f\)) s
+12 119 M (341:) s
+27 119 M
+(     m += sizeof\(tmp\)  #println\(n," ",tmp\)) s
+12 113 M (342:) s
+27 113 M
+(     if mod\(n,1000\) == 0 println\(n,":",m\) end) s
+12 107 M (343:) s
+27 107 M
+(  end) s
+12 101 M (344:) s
+27 101 M
+(  print\(m\)) s
+12 95 M (345:) s
+27 95 M
+(end) s
+12 89 M (346:) s
+12 83 M (347:) s
+27 83 M
+(function num1\(x\)) s
+12 77 M (348:) s
+27 77 M
+(  if x<0.3 return 0.1 end) s
+12 71 M (349:) s
+27 71 M
+(  if x<0.7 return 0.8 end) s
+12 65 M (350:) s
+27 65 M
+(  return 0.9) s
+12 59 M (351:) s
+27 59 M
+( end) s
+12 53 M (352:) s
+12 47 M (353:) s
+27 47 M
+(function numbers1\(s=Some\(\)\)) s
+12 41 M (354:) s
+27 41 M
+(  [add!\(s,num1\(rand\(\)\)\) for i in 1:100]) s
+12 35 M (355:) s
+27 35 M
+(  println\([has\(s,i\) for i in div\(s\)]\)) s
+12 29 M (356:) s
+27 29 M
+(end) s
+12 23 M (357:) s
+12 17 M (358:) s
+27 17 M
+(function numbers2\(n=2, s=Some\(\)\)) s
+12 11 M (359:) s
+27 11 M
+(  [add!\(s,rand\(\)^0.5\) for i in 1:10^n]) s
+12 5 M (360:) s
+27 5 M
+(  println\([\(i,has\(s,i\)\) for i in div\(s\)]\)) s
+276.667 539 M (361:) s
+291.667 539 M
+(end) s
+276.667 533 M (362:) s
+276.667 527 M (363:) s
+291.667 527 M
+(#some1\(\)) s
+276.667 521 M (364:) s
+291.667 521 M
+(#sym1\(\)) s
+276.667 515 M (365:) s
+291.667 515 M
+(#@time tbl1\("data/xomo10000.csv"\)) s
+276.667 509 M (366:) s
+291.667 509 M
+(@time tbl1\("data/weather.csv"\)) s
+276.667 503 M (367:) s
+291.667 503 M
+(#@time nums\("data/xomo10000.csv"\)) s
+276.667 497 M (368:) s
+291.667 497 M
+(#numbers1\(\)) s
+276.667 491 M (369:) s
+291.667 491 M
+(#@time numbers2\(3\)) s
+276.667 485 M (370:) s
+291.667 485 M
+(end) s
+_R
+S
+%%Trailer
+%%Pages: 2
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF

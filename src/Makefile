@@ -1,47 +1,46 @@
-help:
-	@grep -E '^[^ ]+:.*?## .*$$' $(MAKEFILE_LIST) \
-	| sort \
-	| awk 'BEGIN {print ""; FS = ":.*?## "}; \
-	             {printf "make \033[36m%-20s\033[0m : %s\n", $$1, $$2}'
-
+MAKEFLAGS += --silent
+SHELL:= /bin/bash#
 R=$(shell git rev-parse --show-toplevel)
 
+WEB=$(HOME)/gits/baittery/baittery.github.io
 
-../../docs/%.html: %.lua  ## make html
-	@gawk -f $R/etc/lua2doc.awk $< > tmp.lua
-	@echo "docco: $< -> $@"
-	@docco -l classic -o $R/docs tmp.lua > /dev/null
-	@gawk 'sub(/>tmp.lua</,">$(basename $<)<") 1 ' $R/docs/tmp.html > $@
-	@cp $R/etc/docco.css $R/docs/docco.css
+help : Makefile
+	echo ""; printf "usage: make [OPTIONS]\n\n"
+	@gawk 'BEGIN {FS="[ \t]*:.*##[ \t]*"}  \
+	  NF==2 { printf \
+           "  \033[36m%-25s\033[0m %s\n","make " $$1,$$2}'  $< \
+	| grep -v awk
 
-all: $(want) ## all code => .pdf
-	@figlet -W -f larry3d sam>_all.lua
-	echo "SAM : Semi-supervised And Multi-objective explainations">>_all.lua
-	echo "(c) 2022 Tim Menzies <timm@ieee.org> BSD-2 license">>_all.lua
-	@$(foreach f,$^, $(MAKE) ../../docs/$(shell basename $f .lua).html;)
-	@$(foreach f,$^,(figlet -W -f small $f>>_all.lua;cat $f>>_all.lua;);)
-	@$(MAKE) ../../docs/_all.pdf
-	@rm _all.lua
-	@open   ../../docs/_all.pdf
-		
-../../docs/%.pdf: %.lua  ## .lua ==> .pdf
+loc:
+	gawk '!/^(--|[ \t]*$$)/{n++} END {print n" lines"}' *.lua
+
+ready:  ##  commit to main
+	git add *;git commit -am save;git push;git status
+
+LUAS = $(wildcard [a-z]*.lua)
+
+docs : pdfs htmls ## all docs
+pdfs : ../docs/xai.pdf ../docs/lib.pdf ../docs/xaigo.pdf 
+htmls: ../docs/xai.html ../docs/lib.html ../docs/xaigo.html
+
+../docs/%.pdf : %.jl  ## make pdf
 	@mkdir -p $R/docs
 	@echo "pdf-ing $@ ... "
-	@a2ps -B              \
-		-q                   \
-	  --chars-per-line=82   \
-	  --file-align=fill      \
+	@a2ps -Bjr             \
+		-q                    \
+		-L 125                 \
+		--prologue color     \
 		--line-numbers=1        \
-		--borders=no             \
-		--pro=color               \
-		--columns 3                \
-		--right-footer="%Q"         \
-		--left-footer="%W"           \
-		--pretty-print=$R/etc/lua.ssh \
-		--footer=""                    \
-		-M letter                       \
-		-o $@.ps $<
-	@ps2pdf $@.ps $@; rm $@.ps; git add $@
+		--highlight-level=normal \
+		--borders=no              \
+		--pro=color                \
+		--columns 3                 \
+		--right-footer=""            \
+		--pretty-print=jl          \
+		--left-footer=""              \
+		--footer="page %p."             \
+		--pretty-print                    \
+		-M letter                        \
+		-o $@.ps $<                      
+	@ps2pdf $@.ps $@; rm $@.ps; git add $@;  
 	@open $@
-
-

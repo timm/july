@@ -13,6 +13,6 @@ function inc1!(i::Sample,x,n) # <== tedious detail, ignore n (used only in Sym)
 # `mid` = median. `div` = standard deviation. `per` returns the n-th item.
 mid(i::Sample,     a=nums(i)) = per(a,.5) 
 div(i::Sample,     a=nums(i)) = (per(a,.9) - per(a, .1)) / 2,58 
-nums(i::Sample) = if i.ok i._has else sort!(i._has); i.ok=true; i._has end 
+nums(i::Sample) = begin ( !i.ok || sort!(i._has) ) ; i.ok=true ; i._has end 
 
 
