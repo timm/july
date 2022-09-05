@@ -779,6 +779,7 @@ $endif$
                       \fi\ttfamily{},
   float,
   floatplacement   = H,
+  firstnumber=last,
   breaklines       = true,
   frame            = none,
   framesep         = 0.19em,
@@ -914,9 +915,12 @@ $endif$
 \usepackage[margin=.4in,landscape]{geometry}
 
 \usepackage{multicol}
+
+
+
 \begin{document}
 
-\begin{multicols}{3}
+\begin{multicols*}{3}
 %%
 %% begin titlepage
 %%
@@ -1059,7 +1063,7 @@ $if(has-frontmatter)$
 $endif$
 $body$
 
-\end{multicols}
+\end{multicols*}
 $if(has-frontmatter)$
 \backmatter
 $endif$

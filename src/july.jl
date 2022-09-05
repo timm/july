@@ -1,21 +1,18 @@
-# vim: ts=2 sw=2 et : 
-module tmp
-export Num,Sym,Sample
-help = """
-       JULY : fun stuff
-       (c)2022 Tim Menzies, timm@ieee.org, BSD-2
-         
-       USAGE: julia july.jl [OPTIONS]
+module July
+  help = """
+         JULY : fun stuff
+         (c)2022 Tim Menzies, timm@ieee.org, BSD-2
            
-       OPTIONS:
-         -h  --help  show help            = false
-         -p  --p     distance coeffecient = 2 
-       """
-
-using Random, Parameters
-for f in ["lib/2thing.jl", "lib/settings.jl", "lib/2string.jl",
-          "lib/settings.jl","lib/lists.jl", "col/col.jl", "col/sample.jl"]
-  include(f) end
-
-the = cli(settings(help))
+         USAGE: julia july.jl [OPTIONS]
+             
+         OPTIONS:
+           -h  --help  show help            = false
+           -p  --p     distance coeffecient = 2 
+           -s  --seed  random number seed   = 10019
+         """
+  using Random, Parameters
+  includes(dir,files) = map(f->include("../src/$dir/$f.jl"),files)
+  includes("lib", ["2thing","settings","2string","lists"])
+  includes("col", ["col" ,"sample"])
+  the = cli(settings(help))
 end

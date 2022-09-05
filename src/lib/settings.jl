@@ -1,4 +1,4 @@
-"Update `slot` in `d` if a cli flag has the slot prefix;e.g. `-f` for `file`."
+"For e.g. slot x=1, update if cli has `-x 10`. For bool, cli flags flip default."
 function cli(d::Dict)
   for (slot, x) in d
     for (i, v) in pairs(ARGS) 
@@ -7,8 +7,9 @@ function cli(d::Dict)
                          x==false ? "true"  : (
                          ARGS[i+1]))) end end end; d end 
 
-"Return a dictionary of settings extracted from a help string."
-function settings(s)
+"Return dictonary of settings, extracted from help string."
+function settings(s) # -> dictionary of settings
   d=Dict()
+  # for example:        -h --help  show help = false
   for m in eachmatch(r"\n\s+-[^-]+--(\S+)[^=]+=\s+(\S+)",s) 
-    d[Symbol(m[1])] = coerce(m[2] ) end; d end
+    d[Symbol(m[1])] = coerce(m[2] ) end; d end 
