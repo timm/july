@@ -4,8 +4,7 @@ function coerce(s)
   return strip(s) end
 
 "Coerce rows to cells. Pass each row to `fun`."
-function rows(src::Array, fun) for one in src fun(one) end
-function rows(src::String, fun)
+function csv(src, fun)
   for line in eachline(file)
     line = strip(line)
     if sizeof(line) > 0 fun(map(coerce, split(line, ","))) end end end 
