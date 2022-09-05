@@ -1,6 +1,20 @@
-NR==1          {  print "#" FILENAME "\n\n\n"} 
-sub(/^#: /     { line1=$0; next; line1=$0; 
-                 sub(/^function/,"",line2)
-                 sub(/(    .*|\).*)/,")",line2)
-                 print "|" line2 "|" line1 "|"}
-sub(/^# /,"") {  last=$0; print $0; next}
+BEGIN { header($0,Fname) }
+      { /^#/ ? comments($0) : code($0) }
+
+function  header(b4,name) {
+  if (getline > 0) 
+    if (! /^[ \t]*$/) header($0,name) }
+
+function comments(b4,tail) {
+  if (tail) print(tail)
+  gsub(/^# /,"",b4)
+  gsub(/^ /,"",b4)
+  print b4
+  if (getline > 0) { /^#- / ? comments($0) : code($0) }}
+
+function code(b4)  { print "\n```julia"; code1(b4) }
+
+function code1(b4) {
+  print b4
+  if (getline > 0) { /^[^#]/ ? code1($0) : comments($0,  "```\n") }}
+ 
