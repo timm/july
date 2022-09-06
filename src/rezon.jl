@@ -1,9 +1,9 @@
 module July
   help = """
-         JULY : fun stuff
+         REZON : fun stuff
          (c)2022 Tim Menzies, timm@ieee.org, BSD-2
            
-         USAGE: julia july.jl [OPTIONS]
+         USAGE: julia rezon.jl [OPTIONS]
              
          OPTIONS:
            -h  --help  show help            = false
