@@ -1,7 +1,12 @@
 "Coerce string to thing."
+function coerce(s::Bool) s end
 function coerce(s)
-  for t in [Int64,Float64,Bool] if (x=tryparse(t,s)) != nothing return x end end 
-  return strip(s) end
+  s = strip(s) 
+  print(s)
+  if s == "true"  return true end
+  if s == "false" return false end
+  for t in [Int64,Float64] if (x=tryparse(t,s)) != nothing return x end  end
+  return s end  
 
 "Coerce rows to cells. Pass each row to `fun`."
 function csv(src, fun)
